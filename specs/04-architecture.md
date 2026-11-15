@@ -83,4 +83,22 @@ pino, JSON lines.
 
 ## Deployment
 
-Not decided (HOST-1). Requirements for whichever host we choose: run the API and the worker as separate processes; managed PostgreSQL with PostGIS; object storage that serves the map's PMTiles file, glyphs, and sprites with HTTP range requests (ADR-0009); access logs without query strings (ADR-0006) or tile paths (ADR-0009); HTTPS only. A scheduled job refreshes the NYC and NJ map extract, roughly monthly.
+Decided in ADR-0023 (HOST-1); not set up yet (tasks D-1 to D-8 in specs/10). About $7.40 a month at low traffic, plus the domain.
+
+| Part | Where | Notes |
+|---|---|---|
+| API | Fly.io, one shared-cpu-1x machine with 512 MB, Ashburn | Serves `/api` only, on its own subdomain, whose DNS record isn't proxied by Cloudflare. Allows the web app's origin (CORS) for its `GET` routes. |
+| Worker | Fly.io, a second app from the same image, one machine with 512 MB | The long-lived process with each source's cron expressions, as above. Its memory is measured on the largest sources before launch. |
+| Database | Neon, free plan, with PostGIS, US East | Compute pinned at 0.25 CU; the direct (unpooled) connection string. It sleeps after 5 idle minutes, so the first request after that waits for it to wake. |
+| Map | Cloudflare R2, on a custom domain | The PMTiles file for both coverage boxes (ADR-0022, about 1 GB), the glyphs, and the sprites, served with HTTP range requests. The bucket's CORS allows only the web app's origin. |
+| Web app | Cloudflare's static assets for Workers, on the main domain | The Vite build, which calls the API's subdomain. |
+
+HTTPS only: Fly's certificates for the API, Cloudflare's for the rest.
+
+Logs (ADR-0006, ADR-0009):
+
+- Fly keeps only what the processes print, which follows the Logging rules above.
+- Cloudflare's free plan gives us no request logs. With one PMTiles file every tile request has the same path, and the area viewed is in the `Range` header, so no log we keep may hold byte ranges, just as none holds query strings.
+- Neon's database logs must not record query parameters, which include the rounded coordinates. This is checked before launch.
+
+A monthly job cuts the map extract for both coverage boxes from Protomaps' planet build and uploads it to R2. Its R2 key is never logged, as the Socrata token isn't (ING-5).

@@ -163,3 +163,18 @@ Decided with the user on 2026-11-04: show Jersey City's 7 city lots now, without
 | S5-3 | Unconfirmed sites from the State's public tax parcels (`nys-parcels-parking`): parking lots and garages a county, city, town, or village owns, 650 sites in 171 towns; change code `sites_from_parcels_by_owner` | ING-13, ING-14, REC-9 | Done |
 | S5-4 | NYSDOT's park-and-rides (its own copy, or permission), and cities' own lot pages, largest first (Buffalo, Rochester, Syracuse, Albany, Yonkers, White Plains, New Rochelle) | — | To do |
 
+
+## Deployment (ADR-0023)
+
+Hosting was decided by the user on 2026-11-15 (HOST-1). Public launch also waits on the disclaimer's wording (PRD-2) and the app's terms of use and privacy notice (LEG-1).
+
+| Task | What | Requirements | Status |
+|---|---|---|---|
+| D-1 | Accounts and the domain: the user creates the Fly.io, Neon, and Cloudflare accounts and buys the domain | — | To do (the user) |
+| D-2 | A Dockerfile for the API and the worker (one image, two start commands), and a Fly config for each app, in Ashburn | FND-6 | To do |
+| D-3 | Neon: the database with PostGIS, compute pinned at 0.25 CU, its direct connection string as `DATABASE_URL`, and the migrations run against it; check that the first request after the database wakes fits in the API's 2-second connect timeout | FND-5 | To do |
+| D-4 | The web app calls the API cross-origin: the API allows the web app's origin for its `GET` routes, from a new setting, and the web build takes the API's origin at build time and passes it to the API client's `baseUrl`; specs/04's variables updated in the same change | WEB-3, PRIV-2 | To do |
+| D-5 | The map: measure the extract for both coverage boxes with `pmtiles extract --dry-run`, cut it from Protomaps' planet build, upload it with the glyphs and sprites to R2 on a custom domain, set the bucket's CORS to the web app's origin, and set the production `VITE_MAP_STYLE_URL` to our style | PRIV-4, WEB-7 | To do |
+| D-6 | A monthly job that refreshes the map extract and uploads it to R2, on Fly or in CI; its R2 key is never logged | PRIV-4, ING-5 | To do |
+| D-7 | The web app on Cloudflare's static assets for Workers, on the main domain; the API's subdomain set to DNS only (not proxied) | PRIV-2 | To do |
+| D-8 | Checks before launch: the worker's peak memory on the largest sources (the NJ and NY parcel layers) against 512 MB; Neon's database logs record no query parameters, or are turned off; no log we keep holds a query string or a byte range | PRIV-1, PRIV-2, PRIV-4 | To do |

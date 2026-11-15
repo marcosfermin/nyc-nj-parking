@@ -39,6 +39,7 @@ A scheduled worker pulls public data from city and state portals, keeps a snapsh
 | 3 | See rates and an "open now" filter. Rates depend on SRC-1. | Planned |
 | 4 | More NJ municipalities, one city at a time, plus state-run lots if PRD-3 includes them. Jersey City first: its 7 city lots, and unconfirmed sites from tax records (ADR-0012). Then West New York's 9 lots (ADR-0014), Hoboken's garages, and unconfirmed sites in all of Hudson County (ADR-0015); Bayonne, Union City, and Harrison; then Essex County, with Bloomfield's, South Orange's, Nutley's, and Verona's lots (ADR-0018); then Bergen County, with Westwood's and Oradell's lots (ADR-0019); then unconfirmed sites in the other 18 counties (ADR-0020). | In progress |
 | 5 | All of New York State (ADR-0022, PRD-3 decided): the Thruway's commuter lots, unconfirmed sites from the State's public tax parcels, and New York's counties and towns in search; then NYSDOT's park-and-rides and cities' own lot pages. | In progress |
+| Deployment | Use the app online, at its own domain (ADR-0023): the API and the worker on Fly.io, the database on Neon, the map and the web app on Cloudflare. Public launch also waits on PRD-2 and LEG-1. | Planned |
 | Later | On-street parking; a native app if needed. | — |
 
 ## Spec index

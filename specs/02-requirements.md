@@ -40,7 +40,7 @@ Each requirement has an ID. Tasks, tests, and contract operations (`x-requiremen
 | PRIV-1 | No table, log, or metric stores a user's coordinates or place-search text. | 0 |
 | PRIV-2 | Request logs record the method, route pattern, status code, and duration, never the URL, the query string, or the request body. | 0 |
 | PRIV-3 | The web app rounds coordinates to 3 decimal places before sending them. The API rounds again before using them, and doesn't echo them in responses. | 1 |
-| PRIV-4 | The public app's map tiles come from our own hosting, whose logs drop tile paths as well as query strings. A third-party tile host (OpenFreeMap) is used only for development and previews (ADR-0009). | Deployment |
+| PRIV-4 | The public app's map tiles come from our own hosting, whose logs drop tile paths and byte ranges (the PMTiles file's `Range` requests show the area viewed) as well as query strings. A third-party tile host (OpenFreeMap) is used only for development and previews (ADR-0009, ADR-0023). | Deployment |
 | PRIV-5 | Text typed into address search is sent only to the geocoders in ADR-0013, from the browser, after a pause in typing and at least three characters. It never reaches our API, storage, logs, or URLs, and suggestions are cached in memory only. | 4 |
 
 ## Attribution and accuracy (ATT)

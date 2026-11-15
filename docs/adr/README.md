@@ -26,3 +26,4 @@ Each ADR records one decision: the context, the options, the choice, and what fo
 | [0020](0020-rest-of-new-jersey.md) | The rest of New Jersey: unconfirmed sites in the other 18 counties, in one source | Accepted |
 | [0021](0021-search-by-area.md) | Searching a whole county or borough: each facility's area from simplified boundaries | Accepted |
 | [0022](0022-new-york-state.md) | All of New York State: the Thruway's commuter lots, and unconfirmed sites from the State's tax parcels | Accepted |
+| [0023](0023-hosting.md) | Hosting: Fly.io for the API and the worker, Neon for PostGIS, Cloudflare for the map and the web app | Accepted |
