@@ -4,6 +4,7 @@ import type { Sql } from '@parking/db';
 import Fastify, { LogController, type FastifyInstance, type FastifyServerOptions } from 'fastify';
 import openapiGlue from 'fastify-openapi-glue';
 import { parse } from 'yaml';
+import { registerCors } from './cors.ts';
 import { registerErrorHandling } from './errors.ts';
 import { Handlers } from './handlers.ts';
 import { registerRequestLog, serializers } from './logging.ts';
@@ -16,14 +17,17 @@ export interface AppOptions {
   logger?: { level?: string; stream?: NodeJS.WritableStream } | false;
   /** Replaces the handlers, for tests. */
   handlers?: Handlers;
+  /** The web app's origin, which may call the API cross-origin (FND-7). Null or left out: no CORS headers. */
+  webOrigin?: string | null;
 }
 
-export async function buildApp({ sql, logger = { level: 'info' }, handlers }: AppOptions): Promise<FastifyInstance> {
+export async function buildApp({ sql, logger = { level: 'info' }, handlers, webOrigin = null }: AppOptions): Promise<FastifyInstance> {
   const loggerOptions: FastifyServerOptions['logger'] = logger === false ? false : { ...logger, serializers };
   // Fastify's own request lines include the URL, so they're off; registerRequestLog writes ours (PRIV-2).
   const app = Fastify({ logger: loggerOptions, logController: new LogController({ disableRequestLogging: true }) });
 
   registerRequestLog(app);
+  registerCors(app, webOrigin);
   registerErrorHandling(app, contractPaths());
   await app.register(openapiGlue, { specification: CONTRACT_PATH, serviceHandlers: handlers ?? new Handlers(sql) });
 

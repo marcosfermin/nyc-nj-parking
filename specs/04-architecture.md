@@ -54,6 +54,9 @@ Environment variables only, read and checked at startup:
 | `DATABASE_URL` | api, worker, `pnpm db:migrate` | `postgres://…` |
 | `TEST_DATABASE_URL` | tests | A database the tests may empty. When it isn't set, tests use PGlite + PostGIS in-process. Never the development database. |
 | `PORT` | api | Default 8180 |
+| `HOST` | api | The address to listen on. Default `127.0.0.1`; `0.0.0.0` on Fly (fly.api.toml). |
+| `WEB_ORIGIN` | api | The web app's origin, such as `https://example.org`, the one origin allowed to call the API from a browser (FND-7, ADR-0023). Must be an origin with no path, or the API doesn't start. Unset in development, where there are no CORS headers. |
+| `VITE_API_ORIGIN` | web (build time) | The API's origin in production, such as `https://api.example.org` (ADR-0023). Unset in development and the smoke test, where Vite serves `/api` on the web app's own origin. |
 | `LOG_LEVEL` | api, worker | Default `info` |
 | `SOCRATA_APP_TOKEN` | worker | Optional locally, required in deployment. Never logged. |
 | `CONTACT_URL` | worker | Goes in the User-Agent (ING-5). Optional locally, required in deployment. |
@@ -87,13 +90,15 @@ Decided in ADR-0023 (HOST-1); not set up yet (tasks D-1 to D-8 in specs/10). Abo
 
 | Part | Where | Notes |
 |---|---|---|
-| API | Fly.io, one shared-cpu-1x machine with 512 MB, Ashburn | Serves `/api` only, on its own subdomain, whose DNS record isn't proxied by Cloudflare. Allows the web app's origin (CORS) for its `GET` routes. |
+| API | Fly.io, one shared-cpu-1x machine with 512 MB, Ashburn | Serves `/api` only, on its own subdomain, whose DNS record isn't proxied by Cloudflare. Allows the web app's origin, `WEB_ORIGIN`, to read its `GET` responses (FND-7). Always on; its health check is TCP, not `/api/health`, which queries the database and would keep Neon awake. |
 | Worker | Fly.io, a second app from the same image, one machine with 512 MB | The long-lived process with each source's cron expressions, as above. Its memory is measured on the largest sources before launch. |
 | Database | Neon, free plan, with PostGIS, US East | Compute pinned at 0.25 CU; the direct (unpooled) connection string. It sleeps after 5 idle minutes, so the first request after that waits for it to wake. |
 | Map | Cloudflare R2, on a custom domain | The PMTiles file for both coverage boxes (ADR-0022, about 1 GB), the glyphs, and the sprites, served with HTTP range requests. The bucket's CORS allows only the web app's origin. |
 | Web app | Cloudflare's static assets for Workers, on the main domain | The Vite build, which calls the API's subdomain. |
 
 HTTPS only: Fly's certificates for the API, Cloudflare's for the rest.
+
+The image (`Dockerfile`, D-2) holds the API and the worker, with their production dependencies only, and no build step, since Node runs the TypeScript directly. `fly.api.toml` and `fly.worker.toml` start it as two apps, `node apps/api/src/server.ts` and `node apps/worker/src/main.ts`, deployed from the repository root with `fly deploy --config …`. The API's deploy runs the migrations first (`release_command`, FND-5), so it goes before the worker's. The secrets are Fly secrets: `DATABASE_URL` for both, and `SOCRATA_APP_TOKEN` and `CONTACT_URL` for the worker.
 
 Logs (ADR-0006, ADR-0009):
 

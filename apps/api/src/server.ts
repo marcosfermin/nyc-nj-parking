@@ -1,8 +1,10 @@
 import { connect, databaseUrlFromEnv } from '@parking/db';
 import { buildApp } from './app.ts';
+import { webOriginFromEnv } from './cors.ts';
 
+const webOrigin = webOriginFromEnv();
 const sql = connect(databaseUrlFromEnv(), { applicationName: 'nyc-nj-parking-api', connectTimeoutSeconds: 2 });
-const app = await buildApp({ sql, logger: { level: process.env.LOG_LEVEL ?? 'info' } });
+const app = await buildApp({ sql, logger: { level: process.env.LOG_LEVEL ?? 'info' }, webOrigin });
 
 let closing = false;
 async function shutdown(): Promise<void> {

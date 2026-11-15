@@ -8,7 +8,10 @@ export type * from './generated/schema.ts';
 export type ApiClient = Client<paths>;
 
 export interface ApiClientOptions {
-  /** Origin of the API. Empty in the browser, where the API is served from the same origin under /api. */
+  /**
+   * Origin of the API. Empty when the API is served from the page's own origin under /api, as in development; the
+   * API's own domain in production (ADR-0023).
+   */
   baseUrl?: string;
   /** Replaces the global fetch, for tests. */
   fetch?: typeof globalThis.fetch;

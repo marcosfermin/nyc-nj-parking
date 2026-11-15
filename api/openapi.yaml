@@ -8,7 +8,10 @@ info:
     Responses carry codes, never display text (FND-4). No operation calls an upstream source (ING-1).
 servers:
   - url: /
-    description: Same origin as the web app, which calls the API under /api
+    description: >
+      The API's own origin. In production that's its own domain, and the web app calls it cross-origin: the API lets
+      the web app's origin, and no other, read its GET responses (FND-7, ADR-0023). In development the web app and the
+      API share one origin.
 security: []
 tags:
   - name: system

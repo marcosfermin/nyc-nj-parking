@@ -1,0 +1,24 @@
+# Fly.io: the worker (ADR-0023, D-2), from the same Dockerfile as the API. Deploy from the repository root, after the
+# API, whose deploy runs the migrations:
+#   fly deploy --config fly.worker.toml
+# The app name is a placeholder until the Fly account exists (D-1).
+# Secrets, set with `fly secrets set --config fly.worker.toml`: DATABASE_URL, SOCRATA_APP_TOKEN, and CONTACT_URL
+# (specs/04, "Configuration"). The worker never logs them (ING-5).
+app = "nyc-nj-parking-worker"
+primary_region = "iad"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  LOG_LEVEL = "info"
+
+[processes]
+  # One long-lived process that runs each source on its cron schedule (specs/04). It serves nothing, so there's no
+  # http_service and no public address.
+  worker = "node apps/worker/src/main.ts"
+
+[[vm]]
+  # 512 MB until the worker's peak memory on the largest sources is measured (D-8).
+  size = "shared-cpu-1x"
+  memory = "512mb"

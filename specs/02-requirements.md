@@ -12,6 +12,7 @@ Each requirement has an ID. Tasks, tests, and contract operations (`x-requiremen
 | FND-4 | Errors are JSON `{ "code": "…" }`, with codes from specs/05-api.md. The API never returns display text. | 0 |
 | FND-5 | Schema changes are numbered SQL files in packages/db/migrations, applied in order and each once. All pending ones are applied in one transaction, so a failure applies none. | 0 |
 | FND-6 | apps/api and apps/worker never import each other. Shared code lives in packages/. Lint enforces this. | 0 |
+| FND-7 | The web app can call the API on another origin: the API lets one origin, `WEB_ORIGIN` (the web app's), read its `GET` responses, errors included, and answers that origin's preflights for `GET`. Any other origin gets no CORS headers, and without `WEB_ORIGIN` there are none. The web app takes the API's origin at build time, `VITE_API_ORIGIN`, and uses its own origin without it (ADR-0023). | Deployment |
 
 ## Ingestion (ING)
 

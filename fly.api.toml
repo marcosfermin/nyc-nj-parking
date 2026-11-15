@@ -1,0 +1,48 @@
+# Fly.io: the API (ADR-0023, D-2). Deploy from the repository root, before the worker:
+#   fly deploy --config fly.api.toml
+# The app name is a placeholder until the Fly account exists (D-1): Fly app names are unique across all of Fly.
+# Secrets, set with `fly secrets set --config fly.api.toml`: DATABASE_URL, Neon's direct connection string (D-3).
+app = "nyc-nj-parking-api"
+primary_region = "iad"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[deploy]
+  # Applies pending migrations once per deploy, on a temporary machine, before the new API starts (FND-5). If it
+  # fails, the deploy stops and the running API stays as it was.
+  release_command = "node packages/db/src/cli.ts"
+
+[env]
+  HOST = "0.0.0.0"
+  PORT = "8180"
+  LOG_LEVEL = "info"
+  # The web app's origin, the one origin allowed to call the API from a browser (FND-7). Set it once the domain
+  # exists (D-1, D-7); until then the API sends no CORS headers.
+  # WEB_ORIGIN = "https://…"
+
+[processes]
+  app = "node apps/api/src/server.ts"
+
+[http_service]
+  internal_port = 8180
+  force_https = true
+  processes = ["app"]
+  # One machine, always on, so a search never waits for it to start. ADR-0023's cost assumes this.
+  auto_stop_machines = "off"
+  auto_start_machines = true
+  min_machines_running = 1
+
+# A TCP check rather than GET /api/health: that one queries the database, and calling it every 30 seconds would keep
+# Neon's free database from ever going to sleep (ADR-0023).
+[checks]
+  [checks.listening]
+    type = "tcp"
+    port = 8180
+    grace_period = "10s"
+    interval = "30s"
+    timeout = "5s"
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "512mb"

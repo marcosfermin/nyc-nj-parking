@@ -5,6 +5,7 @@ The contract is api/openapi.yaml (OpenAPI 3.1, ADR-0004). This page covers the c
 ## Conventions
 
 - Every path starts with `/api`. Bodies are JSON (`application/json`).
+- In production the API is on its own domain, and the web app calls it cross-origin. The API lets the web app's origin, and no other, read its `GET` responses (FND-7, ADR-0023). In development both share one origin.
 - Field names are camelCase, to match the TypeScript client (decided by the user on 2026-11-03; the original notes sketched snake_case, such as `lot_id`).
 - No display text (FND-4). Enumerations are codes (`kind: "garage"`), and the web app turns them into text.
 - Errors: status code plus `{ "code": "…" }`. The body can carry `parameter` (the name of the bad parameter) and nothing else.

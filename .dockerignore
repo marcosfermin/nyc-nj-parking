@@ -1,0 +1,10 @@
+# What the image build never sees (Dockerfile). Local secrets above all: .env holds the Socrata token.
+.env
+.env.*
+.git
+.data
+**/node_modules
+**/dist
+**/test-results
+**/playwright-report
+*.log
