@@ -137,11 +137,9 @@ export function SearchPage({ geolocation, styleUrl = mapStyleUrl }: { geolocatio
           if (askedFromSearchBy) searchByRef.current?.focus();
         }}
       />
-      {!inArea && (
-        <div className="search__controls">
-          <RadiusPicker value={radius} onChange={setRadius} />
-        </div>
-      )}
+      <div className="search__controls">
+        <RadiusPicker value={radius} onChange={setRadius} disabled={inArea} />
+      </div>
       <OperatorFilter value={operatorTypes} onChange={setOperatorTypes} />
       {styleUrl && (
         <p className="search__hint">

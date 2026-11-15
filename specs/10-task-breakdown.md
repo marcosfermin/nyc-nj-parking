@@ -138,6 +138,7 @@ Decided with the user on 2026-11-04: show Jersey City's 7 city lots now, without
 | S4-43 | NJDOT's park-and-rides go live (the user asked on 2026-11-10, "can I turn on both nj transit and nj dot?"), terms unstated (ADR-0014): 15 lots; paired with every county's tax-record sites at 90 m; the rebuild takes confirmed records before sites, so a lot is always the primary | ING-6, ING-12, ING-14, REC-9 | Done |
 | S4-44 | Town names alike across sources: NJ Transit's official labels and NJDOT's abbreviations read as the names the tax-record sites use, matched within the county (`normalize/towns.ts`, from every town's label and county written by `scripts/build-nj-towns.ts`); change code `town_names_standardized`. Towns written two ways in one county went from 88 to none | WEB-13, ATT-3 | Done |
 | S4-45 | A facility's area only in its own state: NJ Transit's six Suffern lots, in New York State 1 km from Bergen County, were listed under Bergen County by the nearest-area rule; now no area, as for Greenwood Lake and Warwick (found while answering "why is there only 1 lot in Manhattan?") | REC-11 | Done |
+| S4-46 | Web: while a whole county or borough is listed, the radius picker stays in place, greyed out, with a note that it isn't used, rather than disappearing (the user noticed "the filters are different now", 2026-11-14) | WEB-13 | Done |
 
 ### Slice 4 status, Hudson County (2026-11-06)
 

@@ -10,6 +10,8 @@ export const en = {
     "Garages, lots, and fields run by cities, counties, the state, and transit agencies. This release covers NYC Department of Transportation garages and fields; NJ Transit's station and park-and-ride lots and NJDOT's park-and-rides across New Jersey; the New York State Thruway's commuter lots; city lots and garages in Jersey City, West New York, Bayonne, Union City, Hoboken, Harrison, Bloomfield, South Orange, Nutley, Verona, Westwood, and Oradell; and, across New Jersey and much of New York State, unconfirmed sites from tax records.",
   'search.radius.label': 'Search within',
   'search.radius.option': '{km, number} km',
+  // WEB-13: why the radius is greyed out while a whole county or borough is listed.
+  'search.radius.notForArea': 'Not used when showing a whole county or borough.',
   // WEB-13: how to search. A town or address is the default (WEB-11); the device's location is shared only through the
   // dialog (WEB-4).
   'searchBy.label': 'Search by',

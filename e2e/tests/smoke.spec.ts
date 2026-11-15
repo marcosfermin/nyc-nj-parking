@@ -312,7 +312,8 @@ test('S4-41 lists a whole county by town, sending no point', async ({ page }) =>
   await expect(page.getByRole('heading', { level: 3, name: 'Jersey City' })).toBeVisible();
   await expect(page.getByRole('heading', { level: 4, name: '179 Montgomery St.' })).toBeVisible();
   await expect(page.getByText('Showing all of Hudson County')).toBeVisible();
-  await expect(page.getByRole('combobox', { name: 'Search within' })).toHaveCount(0);
+  await expect(page.getByRole('combobox', { name: 'Search within' })).toBeDisabled();
+  await expect(page.getByText('Not used when showing a whole county or borough.')).toBeVisible();
   expect(searches).toEqual(['/api/parking/areas/nj-hudson/facilities']);
   expect(await axeViolations(page)).toEqual([]);
 });

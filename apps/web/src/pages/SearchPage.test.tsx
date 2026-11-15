@@ -138,7 +138,7 @@ describe('SearchPage', () => {
     expect(geolocation.getCurrentPosition).not.toHaveBeenCalled();
   });
 
-  it('WEB-13 lists a whole county by town, with no radius and no distances, and sends no point', async () => {
+  it('WEB-13 lists a whole county by town, with the radius greyed out, no distances, and no point sent', async () => {
     const inMadison = { ...morristown2, id: 'madison-lot', name: 'Madison Lot', address: { line: null, locality: 'Madison', region: 'NJ' as const }, distanceMeters: null };
     listArea.mockResolvedValue({ status: 'ok', results: [inMadison, { ...morristown2, distanceMeters: null }] });
     const { container } = renderWithProviders(<SearchPage />);
@@ -152,9 +152,12 @@ describe('SearchPage', () => {
     expect(listArea).toHaveBeenCalledWith('nj-morris');
     expect(recommend).not.toHaveBeenCalled();
     expect(screen.getAllByRole('heading', { level: 3 }).map((heading) => heading.textContent)).toEqual(['Madison', 'Morristown Town']);
-    expect(screen.queryByRole('combobox', { name: en['search.radius.label'] })).toBeNull();
+    // The radius stays in place, greyed out, with a note saying why (WEB-13).
+    const radius = screen.getByRole('combobox', { name: en['search.radius.label'] });
+    expect(radius).toBeDisabled();
+    expect(radius).toHaveAccessibleDescription(en['search.radius.notForArea']);
     expect(screen.getByText('Showing all of Morris County')).toBeInTheDocument();
-    expect(screen.queryByText(/ m$| km$/)).toBeNull();
+    for (const card of screen.getAllByRole('article')) expect(card.textContent).not.toMatch(/\d (m|km) away/);
     expect(await axeViolations(container)).toEqual([]);
   });
 

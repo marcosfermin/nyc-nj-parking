@@ -151,6 +151,17 @@ a {
   color: var(--color-text-muted);
 }
 
+/* WEB-13: greyed out, not hidden, while a whole county or borough is listed. */
+.radius select:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.radius__note {
+  max-width: 16rem;
+  font-size: 0.8125rem;
+}
+
 /* WEB-13: how to search, and the county and city dropdowns. Full width, each its own row, easy to tap. */
 .search-by,
 .area-search__field {
